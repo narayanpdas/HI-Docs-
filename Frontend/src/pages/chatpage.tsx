@@ -1,4 +1,4 @@
-import { Flex, Box, Text, AbsoluteCenter, Spinner } from "@chakra-ui/react";
+import { Flex, Box, Text, Spinner } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import ChatArea from "./components/ChatArea";
 import ChatInput from "./components/ChatInput";
@@ -33,7 +33,10 @@ const ChatPage = () => {
   useEffect(() => {
     const stat = async () => {
       const res = await checkStatus();
-
+      console.log(res.data);
+      if (res.data && res.data.message !== "success") {
+        setFileStatus(false);
+      }
     }
     if (docs === false) {
       create_token();
@@ -47,6 +50,7 @@ const ChatPage = () => {
         token: sessionStorage.getItem('user_token'),
         api_key: (api_key === null) ? "" : api_key
       });
+      stat();
     }
   }, [docs]);
   useEffect(() => {

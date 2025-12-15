@@ -1,4 +1,4 @@
-import { Text, Link } from "@chakra-ui/react";
+import { Link } from "@chakra-ui/react";
 import { HiDocumentSearch } from "react-icons/hi";
 
 const SearchResults = ({ sources }: { sources: string[] }) => {

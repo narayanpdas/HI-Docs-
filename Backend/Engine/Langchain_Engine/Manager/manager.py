@@ -26,7 +26,7 @@ class Manager():
         self.gibberish_filter_path = NOISE_FILTER_MODEL_PATH
         self.encoder = HuggingFaceEmbeddings(model_name = ENCODER_MODEL,
                                             encode_kwargs={'normalize_embeddings': True},
-        )
+                                            )
                                             # query_instruction="Represent this sentence for searching relevant passages: ")
         self.filter_model, self.filter_tokenizer = self._load_filter_model()
         self.chroma = Chroma(

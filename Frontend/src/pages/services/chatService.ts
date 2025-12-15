@@ -29,6 +29,7 @@ export const stream_message  = async(
         if (data.type==='invalid_api_key' || data.type === 'final' || data.type === 'error'){
           ws.close()
         }
+        resolve(data)
       } 
       catch (err) {
         reject(err);

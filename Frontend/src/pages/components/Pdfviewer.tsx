@@ -1,4 +1,4 @@
-import { Box ,Flex,IconButton} from "@chakra-ui/react";
+import { Box, Flex, IconButton } from "@chakra-ui/react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { useState, useRef, useEffect } from "react";
 import pdfWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
@@ -21,6 +21,7 @@ const PdfViewer = ({ fileUrl, page }: { fileUrl: string; page: number }) => {
 
   useEffect(() => {
     if (!containerRef.current) return;
+    console.log(numPages);
     const observer = new ResizeObserver(entries => {
       for (let entry of entries) {
         setContainerWidth(entry.contentRect.width);
@@ -31,31 +32,31 @@ const PdfViewer = ({ fileUrl, page }: { fileUrl: string; page: number }) => {
     return () => observer.disconnect();
   }, []);
   return (
-       <Flex direction="column" ref={containerRef} h="100%" overflowY="auto" alignItems={'center'}>
-        <Flex justify="flex-end" gap={2} p={2}>
-          <Openinnewwindow pdfUrl={fileUrl} page={page}/>
-          <IconButton
-            aria-label="Zoom out"
-            size="sm"
-            onClick={() => setScale(s => Math.max(s - 0.2, 0.6))}
-          ><CiZoomOut /></IconButton>
-          <IconButton
-            aria-label="Reset zoom"
-            size="sm"
-            onClick={() => setScale(1.0)}
-          ><TbZoomReset /></IconButton>
-          <IconButton
-            aria-label="Zoom in"
-            size="sm"
-            onClick={() => setScale(s => Math.min(s + 0.2, 3))}
-          ><CiZoomIn/></IconButton>
-        </Flex>
+    <Flex direction="column" ref={containerRef} h="100%" overflowY="auto" alignItems={'center'}>
+      <Flex justify="flex-end" gap={2} p={2}>
+        <Openinnewwindow pdfUrl={fileUrl} page={page} />
+        <IconButton
+          aria-label="Zoom out"
+          size="sm"
+          onClick={() => setScale(s => Math.max(s - 0.2, 0.6))}
+        ><CiZoomOut /></IconButton>
+        <IconButton
+          aria-label="Reset zoom"
+          size="sm"
+          onClick={() => setScale(1.0)}
+        ><TbZoomReset /></IconButton>
+        <IconButton
+          aria-label="Zoom in"
+          size="sm"
+          onClick={() => setScale(s => Math.min(s + 0.2, 3))}
+        ><CiZoomIn /></IconButton>
+      </Flex>
       <Box
-        w="100%"               
+        w="100%"
         minW="300px"
-        h="100vh"              
+        h="100vh"
         p={2}
-        resize="horizontal"   
+        resize="horizontal"
       >
         <Document file={fileUrl} onLoadSuccess={onLoadSuccess}>
           <Page
@@ -65,7 +66,7 @@ const PdfViewer = ({ fileUrl, page }: { fileUrl: string; page: number }) => {
             renderAnnotationLayer={false}
           />
         </Document>
-    </Box>
+      </Box>
     </Flex>
   );
 };

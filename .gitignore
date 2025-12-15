@@ -32,7 +32,7 @@ helper_llms/
 main
 public
 .vscode/*
-
+pause_resume_vercel.tsx
 
 # # Editor directories and files
 # !.vscode/extensions.json

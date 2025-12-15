@@ -27,6 +27,7 @@ files
 vector_database
 Database
 Notebooks For Experiments
+helper_llms/
 .ipynb_checkpoints
 main
 public

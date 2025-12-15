@@ -26,21 +26,19 @@ The primary objective is to demonstrate a scalable RAG pipeline that prioritizes
 
 - **Asynchronous Ingestion:** Utilizing FastAPI BackgroundTasks to handle heavy PDF parsing without blocking the main thread.
 
-![Ingestion Pipeline]()
-_(Description: Document Ingestion Loop for duplication-proof, instant feedback and backgroundTask Processing capability.)_
+![Ingestion Pipeline](https://github.com/narayanpdas/HI-Docs-/blob/main/assets/FileUpload_flow_diagram.png)
+_(Description: Document Ingestion Loop with deduplication hashing and background processing.)_
 
 - **RAG Retrieval Loop:**
   The chat engine uses WebSockets for real-time latency. It retrieves context chunks from ChromaDB and injects them into the LLM context window dynamically.
 
-![Chat Flow](link_to_your_chat_flow_image_here)
+![Chat Flow](https://github.com/narayanpdas/HI-Docs-/blob/main/assets/Chat_flow_diagram.png)
 _(Description: WebSocket communication loop verifying API keys and querying the RAG engine)_
 
-- **Type Safety and Segregated Endpoint Design:** Strict validation using Pydantic to prevent runtime errors as well as structured endpoints for better developement cycle.
+- **Type Safety & Modular Design:** Strict validation using Pydantic to prevent runtime errors, with a clean separation of concerns (Ingestion, Embedding, Retrieval).
 
-![Endpoints](link_to_your_endpoint_flow_image_here)
+![Endpoints](https://github.com/narayanpdas/HI-Docs-/blob/main/assets/Endpoints_flow_diagram.png)
 _(Description: All Endpoints with their brief functions)_
-
-- **Modular Design:** A clean separation of concerns (Ingestion, Embedding, Retrieval) for maintainability, via Engine like design pattern.
 
 ## ⚙️ Tech Stack:
 

@@ -1,0 +1,13 @@
+.hellow{
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(-45deg, #01a4b9, #2a5298, #027f49, #01a99b);
+  background-size: 400% 400%;
+  animation: gradientMove 15s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

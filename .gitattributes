@@ -1,0 +1,21 @@
+.bin filter=lfs diff=lfs merge=lfs -text
+.pdf filter=lfs diff=lfs merge=lfs -text
+*.bin filter=lfs diff=lfs merge=lfs -text
+*.pdf filter=lfs diff=lfs merge=lfs -text
+Database/Pdfs/*.pdf filter=lfs diff=lfs merge=lfs -text
+Database/vectordb/*/*.bin filter=lfs diff=lfs merge=lfs -text
+Database/vectordb/chroma.sqlite3 filter=lfs diff=lfs merge=lfs -text
+local_llm filter=lfs diff=lfs merge=lfs -text
+bart_decomposer_model filter=lfs diff=lfs merge=lfs -text
+bart_decomposer_model/** filter=lfs diff=lfs merge=lfs -text
+local_llm/** filter=lfs diff=lfs merge=lfs -text
+disitil_bert_for_noise_filtering/** filter=lfs diff=lfs merge=lfs -text
+.safetensors filter=lfs diff=lfs merge=lfs -text
+Backend/Engine/Langchain_Engine/helper_llms/** filter=lfs diff=lfs merge=lfs -text
+/Backend/Engine/Langchain_Engine/helper_llms/bart_decomposer_model/tf_model.h5 filter=lfs diff=lfs merge=lfs -text
+/Backend/Engine/Langchain_Engine/helper_llms/disitil_bert_for_noise_filtering/model.safetensors filter=lfs diff=lfs merge=lfs -text
+/Backend/Engine/Notebooks[[:space:]]For[[:space:]]Experiments/disitil_bert_for_noise_filtering/model.safetensors filter=lfs diff=lfs merge=lfs -text
+/Backend/Engine/main/search_optimizers/bart_decomposer_model/tf_model.h5 filter=lfs diff=lfs merge=lfs -text
+/Backend/Engine/Database/vectordb/chroma.sqlite3 filter=lfs diff=lfs merge=lfs -text
+
+

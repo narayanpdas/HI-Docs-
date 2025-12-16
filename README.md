@@ -1,6 +1,6 @@
 # HIDocs: A production-grade Retrieval-Augmented Generation (RAG) platform decoupled from notebook environments.
 
-## Test in Production : LINK...
+<!-- ## Test in Production : LINK... -->
 
 ## ℹ️ About HIDocs:
 

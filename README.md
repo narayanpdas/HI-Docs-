@@ -93,14 +93,36 @@ _(Description: All Endpoints with their brief functions)_
    ```
 
 4. **Frontend Setup:(Optional if UI interface is required):**
+
    ```bash
    cd ./Frontend
    npm install
    npm run dev
    ```
+
    For Production Mode (with an appropirate server):
+
    ```bash
    npm run build
+   ```
+
+5. **Environment Variables Setup(Optional-else system uses the default):**
+
+   _Note : Currently the project only supports Google's Gemini but will have multiple api support and better methods to compare them in the future._
+
+   Create a config.env file in the ./Backend folder.
+
+   ```
+   touch config.env
+   ```
+
+   ```
+   GEMINI_API_KEY="your_gemini_api_key"
+   CHUNK_SIZE = 1500
+   CHUNK_OVERLAP = 200
+   ENCODER_NAME = "BAAI/bge-base-en-v1.5"
+   COLLECTION_NAME = "chroma_db_2"
+   GEMINI_MODEL_NAME = "gemini-2.5-flash"
    ```
 
 ## Version Features(Current Version:1):

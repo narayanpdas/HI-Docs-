@@ -2,7 +2,7 @@ from dotenv import load_dotenv,find_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from Engine.Langchain_Engine.Manager.manager import Manager
 # from langsmith import client
-from langchain.retrievers import EnsembleRetriever
+# from langchain_community.retrievers import re
 from langchain_core.messages import HumanMessage
 
 import os,asyncio
@@ -40,9 +40,10 @@ class Engine():
         self.API_KEY = GEMINI_API_KEY
     
     async def search(self,query:list[str],filters:list=None):
-        retriever = EnsembleRetriever(retrievers=[
-            self.manager.chroma.as_retriever(search_kwargs={'k':3}),
-        ])
+        # retriever = EnsembleRetriever(retrievers=[
+        #     self.manager.chroma.as_retriever(search_kwargs={'k':3}),
+        # ])
+        retriever = self.manager.chroma.as_retriever(search_kwargs={'k':3})
         results = await retriever.ainvoke(query[0])
         print("\n ***Result From search in engine of 1st doc*** \n",results[0].page_content)
         if filters:

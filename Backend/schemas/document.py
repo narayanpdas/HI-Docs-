@@ -6,6 +6,7 @@ class DocumentMetadata(BaseModel):
     Represents the metadata for a single document stored in the system.
     Useful for an API endpoint that lists all available documents.
     """
+    
     source_document: str
     publication_date: str
     document_type: str

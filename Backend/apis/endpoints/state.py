@@ -8,19 +8,19 @@ from typing import Optional
 import os,json
 router = APIRouter()
 
-class token(BaseModel):
+class Token(BaseModel):
         token:str
         api_key:Optional[str]=None
         
 @router.post('/create')
 async def create(
-        request:Request,
+        token:Token,
         db:AsyncSession=Depends(get_db)
         ):
         try:    
-                req = await request.json()
-                user_token = req['token']
-                api_key = req['api_key']
+                # req = await token
+                user_token = token.token
+                api_key = token.api_key
                 # print(f"User Token: {user_token}\n APIKEY: {api_key}\n")
                 stmt = select(Guys).where(Guys.id==user_token)
                 user = await db.scalar(stmt)
@@ -35,7 +35,7 @@ async def create(
                         db.add(new_guy)
                         print(f"Added {new_guy}")
                 await db.commit()
-                return {"status":"Success","code":"200"}
+                return {"status":"Success","code":"{user_token}"}
         except Exception as e:
                 print(e)
                 return {"status":"Failed","code":f"404 with \n{e}"}

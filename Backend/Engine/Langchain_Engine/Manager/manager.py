@@ -4,7 +4,7 @@ from langchain_community.vectorstores.utils import filter_complex_metadata
 from langchain_core.documents import Document
 from dotenv import load_dotenv, find_dotenv
 import pandas as pd
-import torch, os, asyncio
+import  os, asyncio
 from langchain_chroma import Chroma
 from langchain_community.retrievers import BM25Retriever
 from langchain_community.embeddings import HuggingFaceEmbeddings

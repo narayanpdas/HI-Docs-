@@ -8,6 +8,7 @@ from models.docs import UserDocuments
 from schemas.document import Docs,UserDocs
 import asyncio
 
+
 # from fastapi.security import OAuth2PasswordBearer
 # SECRET_KEY = os.getenv("SECRET_KEY", "a_very_secret_key_for_dev")
 # ALGORITHM = "HS256"

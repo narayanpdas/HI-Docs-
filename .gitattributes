@@ -19,3 +19,9 @@ Backend/Engine/Langchain_Engine/helper_llms/** filter=lfs diff=lfs merge=lfs -te
 /Backend/Engine/Database/vectordb/chroma.sqlite3 filter=lfs diff=lfs merge=lfs -text
 
 
+Frontend/* linguist-vendored
+*.ipynb linguist-vendored
+*.py linguist-detectable
+
+
+

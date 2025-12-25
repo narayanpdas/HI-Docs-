@@ -62,6 +62,7 @@ async def handle_chat_query(
         print("Error: ",e)
         await websocket.send_json({"type":"error","message":str(e)})
         await websocket.close()
-        
+
+
         
         

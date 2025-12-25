@@ -12,7 +12,7 @@ from db.users.session import get_func_db
 from sqlalchemy import select
 from models.docs import Documents
 from models.guys import Guys
-
+from services.redis_service import RedisServer
 
 defaultcontext= """
 The Digital Personal Data Protection Act (DPDP) Act is India's comprehensive data privacy law, enacted in 2023, to govern how companies and government entities handle the digital personal data of individuals. 
@@ -70,15 +70,22 @@ class RAGService:
         else:
             return 'decomposition'
     
-    async def process_pdf(self,doc_id:int,user_id:str):
+    async def process_pdf(self,
+                          doc_id:int,
+                          user_id:str,
+                          ):
+        
+        # TODO: Add logic to release the locked username from the redis_server.
         db:AsyncSession = get_func_db()
         user = await db.scalar(select(Guys).where(Guys.id == user_id))
-        file_to_process = await db.scalar(select(Documents).where(Documents.id==doc_id))
+        file_to_process = await db.scalar(select(Documents).where(Documents.id == doc_id))
         try:
             print(f"Processing {file_to_process.name}.")
             await self.rag_engine.load_pdf(path=file_to_process.path)
+            redis_server = RedisServer()
             file_to_process.is_processed = True
             user.current_process_doc_id = None
+            redis_server.delete(user_id)
             print(f"Processing of {file_to_process.name} Complete.")
         except Exception as e:
             print("Error Occured During Processing Pdf, here\n",e)

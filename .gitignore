@@ -33,6 +33,7 @@ main
 public
 .vscode/*
 pause_resume_vercel.tsx
+vector_db
 
 # # Editor directories and files
 # !.vscode/extensions.json

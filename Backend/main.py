@@ -12,6 +12,7 @@ from services.redis_service import RedisServer
 
 
 from db.users.session import create_tables
+import redis
 
 
 
@@ -22,7 +23,7 @@ async def lifespan(app: FastAPI):
     print("--- Loading Models---")
     await create_tables()
     app.state.rag_service = RAGService()
-    app.state.redis_service = RedisServer()
+    app.state.redis_service = redis.Redis()
     yield
     print("--- App Shutdown ---")
 app = FastAPI(lifespan = lifespan)

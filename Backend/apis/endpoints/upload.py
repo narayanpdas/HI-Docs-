@@ -12,6 +12,7 @@ from models.guys import Guys
 from services.rag_service import RAGService
 from starlette.requests import HTTPConnection
 from services.redis_service import RedisServer
+from redis import Redis
 
 
 from schemas.upload import UploadResponse
@@ -36,7 +37,7 @@ async def calculate_file_hash(file_path:str,file:UploadFile)->str:
 def get_rag_service(connection:HTTPConnection)->RAGService:
     return connection.app.state.rag_service
 
-def get_redis_service(connection:HTTPConnection)->RedisServer:
+def get_redis_service(connection:HTTPConnection)->Redis:
     return connection.app.state.redis_service
 
 async def process_pdf(rag_service:RAGService,user_id:str,doc_id:int):
@@ -55,7 +56,7 @@ async def upload(
     file:Annotated[UploadFile,File(description="A Pdf File")],
     background:BackgroundTasks,
     rag_service:RAGService=Depends(get_rag_service),
-    redis_server:RedisServer=Depends(get_redis_service),
+    redis_server:Redis=Depends(get_redis_service),
     db:AsyncSession = Depends(get_db),
 ):
     if file.content_type != "application/pdf":
@@ -109,7 +110,7 @@ async def upload(
             await db.flush()
             user = await db.scalar(select(Guys).where(Guys.id == user_token))
             user.current_process_doc_id = doc.id
-            redis_server.add(key=user_token,value=doc.id)
+            redis_server.set(name=user_token,value=doc.id)
             background.add_task(process_pdf,
                                 rag_service=rag_service,
                                 doc_id=doc.id,

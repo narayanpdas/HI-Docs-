@@ -6,7 +6,8 @@ from models.guys import Guys
 from typing import Annotated
 from starlette.requests import HTTPConnection
 from services.redis_service import RedisServer
-def get_redis_service(connection:HTTPConnection)->RedisServer:
+from redis import Redis
+def get_redis_service(connection:HTTPConnection)->Redis:
     return connection.app.state.redis_service
 
 
@@ -16,7 +17,7 @@ router = APIRouter()
 async def status(
     user_token:Annotated[str,Query(description="The FingerPrintjs Id of the user.")],
     db:AsyncSession = Depends(get_db),
-    redis_server:RedisServer=Depends(get_redis_service)
+    redis_server:Redis=Depends(get_redis_service)
 ):
     # TODO: Update this to SSE version, i.e. Server Sent Event
     """

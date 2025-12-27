@@ -17,5 +17,7 @@ class RedisServer():
         self.redis_server.delete(key)
     def get(self,key):
         return self.redis_server.get(key)
+    def incr(self,key):
+        self.redis_server.incr(name=key,amount=1)
 
 

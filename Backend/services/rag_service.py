@@ -19,6 +19,7 @@ The Digital Personal Data Protection Act (DPDP) Act is India's comprehensive dat
 It requires lawful processing of data with consent, establishes rights for individuals (data principals), and outlines duties for data fiduciaries, with significant penalties for non-compliance. 
 The Act is designed to protect citizen privacy while fostering a digital economy, and includes specific protections for children's data. 
 """
+
 def clean_hipens(text):
     text = re.sub(r'(\w+)-\s+(\w+)', r'\1\2', text)
     return text

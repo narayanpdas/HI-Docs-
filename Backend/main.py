@@ -8,11 +8,10 @@ from apis.endpoints import upload
 from apis.endpoints import chat
 from apis.endpoints import status
 from services.rag_service import RAGService
-from services.redis_service import RedisServer
+from services.redis_service import RedisManager
 
 
 from db.users.session import create_tables
-import redis
 
 
 
@@ -23,12 +22,13 @@ async def lifespan(app: FastAPI):
     print("--- Loading Models---")
     await create_tables()
     app.state.rag_service = RAGService()
-    app.state.redis_service = redis.Redis()
+    app.state.redis_service = RedisManager()
+
     yield
     print("--- App Shutdown ---")
 app = FastAPI(lifespan = lifespan)
 
-# TODO Change this during Deployment.
+# TODO Change required during Deployment.
 origins = [
     "http://localhost:5173",   
 ]

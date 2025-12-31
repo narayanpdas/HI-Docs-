@@ -11,7 +11,8 @@ from models.guys import Guys
 
 from services.rag_service import RAGService
 from starlette.requests import HTTPConnection
-from services.redis_service import RedisServer
+from services.redis_service import RedisManager
+from redis import Redis
 
 
 from schemas.upload import UploadResponse
@@ -32,11 +33,10 @@ async def calculate_file_hash(file_path:str,file:UploadFile)->str:
             await file_.write(chunk)
     return sha256_hash.hexdigest()
 
-
 def get_rag_service(connection:HTTPConnection)->RAGService:
     return connection.app.state.rag_service
 
-def get_redis_service(connection:HTTPConnection)->RedisServer:
+def get_redis_service(connection:HTTPConnection)->RedisManager:
     return connection.app.state.redis_service
 
 async def process_pdf(rag_service:RAGService,user_id:str,doc_id:int):
@@ -44,7 +44,7 @@ async def process_pdf(rag_service:RAGService,user_id:str,doc_id:int):
                                 doc_id=doc_id)
 
 router = APIRouter()
-
+UPLOAD_CREDIT_COST = 50
 
 
 @router.post('/upload',
@@ -55,14 +55,28 @@ async def upload(
     file:Annotated[UploadFile,File(description="A Pdf File")],
     background:BackgroundTasks,
     rag_service:RAGService=Depends(get_rag_service),
-    redis_server:RedisServer=Depends(get_redis_service),
+    redis_server:RedisManager=Depends(get_redis_service),
     db:AsyncSession = Depends(get_db),
 ):
+    
+    if int(redis_server.check_credits(user_id=user_token)) < UPLOAD_CREDIT_COST:
+        return{
+            "status":"failed",
+            "message":"Free Tier Limit Reached"
+        }
+    
+    if int(redis_server.check_task(user_id=user_token)):
+        return {
+            "status":"processing",
+            "message":"Already Processing a Pdf."
+        }
+    
     if file.content_type != "application/pdf":
         return{
             "status":"failed",
             "message":"Please Upload Pdf Files only"
         }
+    
     save_path = Path.cwd() / "files"
     save_path.mkdir(exist_ok=True)
     file_ext = Path(file.filename).suffix
@@ -70,7 +84,7 @@ async def upload(
     temp_file = save_path / unique_filename
     try:        
         file_hash = await calculate_file_hash(file_path=temp_file,file=file)
-        stmt = select(Documents).where(Documents.hash==file_hash)
+        stmt = select(Documents).where(Documents.hash == file_hash)
         file_ = await db.scalar(stmt)
         if file_:
             os.remove(temp_file)
@@ -106,17 +120,21 @@ async def upload(
                 )
             db.add(doc_link)
             db.add(doc)
+
             await db.flush()
             user = await db.scalar(select(Guys).where(Guys.id == user_token))
             user.current_process_doc_id = doc.id
-            redis_server.add(key=user_token,value=doc.id)
+
+            redis_server.add_task(user_id=user_token)
+            redis_server.decr_credits(user_id=user_token,
+                                      amnt=UPLOAD_CREDIT_COST)
+            # TODO  Add Logic for credit reduction for both uploads and queries as well as check for free tier credit limits.
             background.add_task(process_pdf,
                                 rag_service=rag_service,
                                 doc_id=doc.id,
                                 user_id=user_token
                                 )
             
-            print(f"Added {file.filename} to {save_path}...")
         await db.commit()
     except Exception as e:
         return {

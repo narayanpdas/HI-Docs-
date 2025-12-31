@@ -5,8 +5,9 @@ from sqlalchemy import select
 from models.guys import Guys
 from typing import Annotated
 from starlette.requests import HTTPConnection
-from services.redis_service import RedisServer
-def get_redis_service(connection:HTTPConnection)->RedisServer:
+from services.redis_service import RedisManager
+from redis import Redis
+def get_redis_service(connection:HTTPConnection)->Redis:
     return connection.app.state.redis_service
 
 
@@ -16,7 +17,7 @@ router = APIRouter()
 async def status(
     user_token:Annotated[str,Query(description="The FingerPrintjs Id of the user.")],
     db:AsyncSession = Depends(get_db),
-    redis_server:RedisServer=Depends(get_redis_service)
+    redis_server:RedisManager=Depends(get_redis_service)
 ):
     # TODO: Update this to SSE version, i.e. Server Sent Event
     """
@@ -30,7 +31,7 @@ async def status(
     try:
         return{
             "status":"success",
-            "message":f"{redis_server.get(key=user_token)}"
+            "message":f"{redis_server.check_task(user_id=user_token)}"
         }
     except Exception as e:
         print(f"Mission Failed, here is the Error as to why\n {e}")

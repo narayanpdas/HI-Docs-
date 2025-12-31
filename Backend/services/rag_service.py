@@ -12,17 +12,20 @@ from db.users.session import get_func_db
 from sqlalchemy import select
 from models.docs import Documents
 from models.guys import Guys
-from services.redis_service import RedisServer
+from services.redis_service import RedisManager
 
 defaultcontext= """
 The Digital Personal Data Protection Act (DPDP) Act is India's comprehensive data privacy law, enacted in 2023, to govern how companies and government entities handle the digital personal data of individuals. 
 It requires lawful processing of data with consent, establishes rights for individuals (data principals), and outlines duties for data fiduciaries, with significant penalties for non-compliance. 
 The Act is designed to protect citizen privacy while fostering a digital economy, and includes specific protections for children's data. 
 """
+
 def clean_hipens(text):
     text = re.sub(r'(\w+)-\s+(\w+)', r'\1\2', text)
     return text
+
 class RAGService:
+    
     def __init__(self):
         """
             Initializes the service by creating an instance of the core RAG engine.
@@ -30,6 +33,7 @@ class RAGService:
         """
         self.rag_engine = RAG_Engine()
         print("RAG Engine instance created for service.")
+    
     def _handle_LLM_output(self,llm_outputs:list[str]):
         """Parse LLM JSON-like output safely and flexibly."""
         _temp = []
@@ -52,6 +56,7 @@ class RAGService:
                     except Exception:
                         pass
         return _temp
+    
     def _preprocess(self,search_result):
         pattern = r'.*?\.(pdf|txt|docs)\b'
         m = set()
@@ -61,6 +66,7 @@ class RAGService:
             m.add(matches.group(0))
         print(f'searches: {search_result} \n m:{m}\n')
         return list(m),search_result
+    
     async def search_type_requirement(self,query:str)->str:
         print(query.split(' '))
         if len(query.split(' ')) <= 8: # TODO: Make this Query Routing Logic BetTer.
@@ -75,17 +81,18 @@ class RAGService:
                           user_id:str,
                           ):
         
-        # TODO: Add logic to release the locked username from the redis_server.
         db:AsyncSession = get_func_db()
         user = await db.scalar(select(Guys).where(Guys.id == user_id))
         file_to_process = await db.scalar(select(Documents).where(Documents.id == doc_id))
         try:
             print(f"Processing {file_to_process.name}.")
             await self.rag_engine.load_pdf(path=file_to_process.path)
-            redis_server = RedisServer()
             file_to_process.is_processed = True
             user.current_process_doc_id = None
-            redis_server.delete(user_id)
+            redis_server = RedisManager()
+            redis_server.delete_task(user_id=user_id)
+            await redis_server.sync_credits_to_db(user_id=user_id,
+                                                  db=db)
             print(f"Processing of {file_to_process.name} Complete.")
         except Exception as e:
             print("Error Occured During Processing Pdf, here\n",e)
@@ -94,6 +101,7 @@ class RAGService:
         finally:
             await db.commit()
             await db.close()
+            
     async def search_(self,query:List[str],top_n:int,filters:List[str]=None):
         yield {"type":"thought","value":query}
         results = await self.rag_engine.search(query=query)
@@ -149,8 +157,10 @@ class RAGService:
                     files,file_chunks = self._preprocess(_results['ids'])
                     print(_results)
                     yield {"type":"search_result","value":f"{files}\n"}
+    
     async def check_relevance(self,key,context,query):
         return self.rag_engine.LLM.check_relevance(key=key,context=context,query=query)
+    
     async def get_compliance_answer(self, request: ChatRequest) -> AsyncGenerator[Dict[str,Any],None]:
         """
             Orchestrates the RAG process and ensures the output is valid.
